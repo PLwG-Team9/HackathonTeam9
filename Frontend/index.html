@@ -1,686 +1,754 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Call Center Voice Analysis</title>
     <style>
-        :root {
-            /* Light theme colors */
-            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --bg-secondary: rgba(255, 255, 255, 0.95);
-            --text-primary: #333;
-            --text-secondary: #7f8c8d;
-            --text-muted: #888;
-            --border-color: #ddd;
-            --card-shadow: rgba(0, 0, 0, 0.1);
-            --upload-bg: #f8f9fa;
-            --upload-hover: #e3f2fd;
-            --upload-dragover: #d5f4e6;
-            --file-info-bg: #e8f5e8;
-            --transcript-bg: white;
-        }
+      :root {
+        /* Light theme colors */
+        --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --bg-secondary: rgba(255, 255, 255, 0.95);
+        --text-primary: #333;
+        --text-secondary: #7f8c8d;
+        --text-muted: #888;
+        --border-color: #ddd;
+        --card-shadow: rgba(0, 0, 0, 0.1);
+        --upload-bg: #f8f9fa;
+        --upload-hover: #e3f2fd;
+        --upload-dragover: #d5f4e6;
+        --file-info-bg: #e8f5e8;
+        --transcript-bg: white;
+      }
 
-        [data-theme="dark"] {
-            /* Dark theme colors */
-            --bg-primary: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            --bg-secondary: rgba(44, 62, 80, 0.95);
-            --text-primary: #ecf0f1;
-            --text-secondary: #bdc3c7;
-            --text-muted: #95a5a6;
-            --border-color: #34495e;
-            --card-shadow: rgba(0, 0, 0, 0.3);
-            --upload-bg: #34495e;
-            --upload-hover: #2c3e50;
-            --upload-dragover: #27ae60;
-            --file-info-bg: #2c3e50;
-            --transcript-bg: #34495e;
-        }
+      [data-theme="dark"] {
+        /* Dark theme colors */
+        --bg-primary: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        --bg-secondary: rgba(44, 62, 80, 0.95);
+        --text-primary: #ecf0f1;
+        --text-secondary: #bdc3c7;
+        --text-muted: #95a5a6;
+        --border-color: #34495e;
+        --card-shadow: rgba(0, 0, 0, 0.3);
+        --upload-bg: #34495e;
+        --upload-hover: #2c3e50;
+        --upload-dragover: #27ae60;
+        --file-info-bg: #2c3e50;
+        --transcript-bg: #34495e;
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg-primary);
-            min-height: 100vh;
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-        }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg-primary);
+        min-height: 100vh;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+      }
 
-        [dir="rtl"] {
-            text-align: right;
-        }
+      [dir="rtl"] {
+        text-align: right;
+      }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
 
-        .top-controls {
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
+      .top-controls {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
 
-        .control-btn {
-            background: var(--bg-secondary);
-            border: none;
-            padding: 10px 15px;
-            border-radius: 25px;
-            cursor: pointer;
-            color: var(--text-primary);
-            font-size: 0.9em;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 5px 15px var(--card-shadow);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+      .control-btn {
+        background: var(--bg-secondary);
+        border: none;
+        padding: 10px 15px;
+        border-radius: 25px;
+        cursor: pointer;
+        color: var(--text-primary);
+        font-size: 0.9em;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 5px 15px var(--card-shadow);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
 
-        .control-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px var(--card-shadow);
-        }
+      .control-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 20px var(--card-shadow);
+      }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            background: var(--bg-secondary);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px var(--card-shadow);
-            transition: all 0.3s ease;
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+        background: var(--bg-secondary);
+        backdrop-filter: blur(10px);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px var(--card-shadow);
+        transition: all 0.3s ease;
+      }
+
+      .header h1 {
+        color: var(--text-primary);
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .header p {
+        color: var(--text-secondary);
+        font-size: 1.1em;
+        margin-bottom: 20px;
+      }
+
+      .main-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .upload-section,
+      .results-section {
+        background: var(--bg-secondary);
+        backdrop-filter: blur(10px);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px var(--card-shadow);
+        transition: all 0.3s ease;
+      }
+
+      .section-title {
+        font-size: 1.5em;
+        color: var(--text-primary);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .upload-area {
+        border: 3px dashed #3498db;
+        border-radius: 15px;
+        padding: 40px;
+        text-align: center;
+        background: var(--upload-bg);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .upload-area:hover {
+        border-color: #2980b9;
+        background: var(--upload-hover);
+        transform: translateY(-2px);
+      }
+
+      .upload-area.dragover {
+        border-color: #27ae60;
+        background: var(--upload-dragover);
+      }
+
+      .upload-icon {
+        font-size: 3em;
+        color: #3498db;
+        margin-bottom: 15px;
+      }
+
+      .upload-text {
+        font-size: 1.1em;
+        color: var(--text-primary);
+        margin-bottom: 10px;
+      }
+
+      .upload-subtext {
+        font-size: 0.9em;
+        color: var(--text-muted);
+      }
+
+      .file-input {
+        display: none;
+      }
+
+      .analyze-btn {
+        background: linear-gradient(45deg, #27ae60, #2ecc71);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 25px;
+        font-size: 1.1em;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 20px;
+        width: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+      }
+
+      .analyze-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 20px rgba(39, 174, 96, 0.4);
+      }
+
+      .analyze-btn:disabled {
+        background: #bdc3c7;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .spinner {
+        border: 4px solid var(--border-color);
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .results {
+        display: none;
+      }
+
+      .sentiment-card {
+        background: linear-gradient(135deg, #74b9ff, #0984e3);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .sentiment-card.positive {
+        background: linear-gradient(135deg, #00b894, #00cec9);
+      }
+
+      .sentiment-card.negative {
+        background: linear-gradient(135deg, #e17055, #d63031);
+      }
+
+      .sentiment-card.neutral {
+        background: linear-gradient(135deg, #fdcb6e, #e17055);
+      }
+
+      .sentiment-score {
+        font-size: 2em;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .issues-list {
+        background: var(--upload-bg);
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+      }
+
+      .issue-item {
+        background: var(--transcript-bg);
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        border-left: 4px solid #e74c3c;
+        box-shadow: 0 2px 5px var(--card-shadow);
+        color: var(--text-primary);
+      }
+
+      .issue-priority {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: 600;
+        margin-left: 10px;
+      }
+
+      [dir="rtl"] .issue-priority {
+        margin-left: 0;
+        margin-right: 10px;
+      }
+
+      .high-priority {
+        background: #e74c3c;
+        color: white;
+      }
+
+      .medium-priority {
+        background: #f39c12;
+        color: white;
+      }
+
+      .low-priority {
+        background: #27ae60;
+        color: white;
+      }
+
+      .escalation-alert {
+        background: linear-gradient(45deg, #e74c3c, #c0392b);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+        text-align: center;
+        font-weight: 600;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.02);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .transcript-section {
+        background: var(--upload-bg);
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 20px;
+      }
+
+      .transcript-text {
+        background: var(--transcript-bg);
+        padding: 15px;
+        border-radius: 8px;
+        font-family: "Courier New", monospace;
+        font-size: 0.9em;
+        line-height: 1.5;
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+      }
+
+      .file-info {
+        background: var(--file-info-bg);
+        padding: 10px 15px;
+        border-radius: 8px;
+        margin: 10px 0;
+        display: none;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .file-name {
+        font-weight: 600;
+        color: #27ae60;
+      }
+
+      .remove-file {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.8em;
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          grid-template-columns: 1fr;
         }
 
         .header h1 {
-            color: var(--text-primary);
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 700;
+          font-size: 2em;
         }
 
-        .header p {
-            color: var(--text-secondary);
-            font-size: 1.1em;
-            margin-bottom: 20px;
+        .container {
+          padding: 10px;
         }
 
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
+        .top-controls {
+          justify-content: center;
+          flex-wrap: wrap;
         }
-
-        .upload-section, .results-section {
-            background: var(--bg-secondary);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px var(--card-shadow);
-            transition: all 0.3s ease;
-        }
-
-        .section-title {
-            font-size: 1.5em;
-            color: var(--text-primary);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .upload-area {
-            border: 3px dashed #3498db;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            background: var(--upload-bg);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .upload-area:hover {
-            border-color: #2980b9;
-            background: var(--upload-hover);
-            transform: translateY(-2px);
-        }
-
-        .upload-area.dragover {
-            border-color: #27ae60;
-            background: var(--upload-dragover);
-        }
-
-        .upload-icon {
-            font-size: 3em;
-            color: #3498db;
-            margin-bottom: 15px;
-        }
-
-        .upload-text {
-            font-size: 1.1em;
-            color: var(--text-primary);
-            margin-bottom: 10px;
-        }
-
-        .upload-subtext {
-            font-size: 0.9em;
-            color: var(--text-muted);
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .analyze-btn {
-            background: linear-gradient(45deg, #27ae60, #2ecc71);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 20px;
-            width: 100%;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
-        }
-
-        .analyze-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(39, 174, 96, 0.4);
-        }
-
-        .analyze-btn:disabled {
-            background: #bdc3c7;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .spinner {
-            border: 4px solid var(--border-color);
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .results {
-            display: none;
-        }
-
-        .sentiment-card {
-            background: linear-gradient(135deg, #74b9ff, #0984e3);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .sentiment-card.positive {
-            background: linear-gradient(135deg, #00b894, #00cec9);
-        }
-
-        .sentiment-card.negative {
-            background: linear-gradient(135deg, #e17055, #d63031);
-        }
-
-        .sentiment-card.neutral {
-            background: linear-gradient(135deg, #fdcb6e, #e17055);
-        }
-
-        .sentiment-score {
-            font-size: 2em;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .issues-list {
-            background: var(--upload-bg);
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .issue-item {
-            background: var(--transcript-bg);
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            border-left: 4px solid #e74c3c;
-            box-shadow: 0 2px 5px var(--card-shadow);
-            color: var(--text-primary);
-        }
-
-        .issue-priority {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.8em;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-
-        [dir="rtl"] .issue-priority {
-            margin-left: 0;
-            margin-right: 10px;
-        }
-
-        .high-priority {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .medium-priority {
-            background: #f39c12;
-            color: white;
-        }
-
-        .low-priority {
-            background: #27ae60;
-            color: white;
-        }
-
-        .escalation-alert {
-            background: linear-gradient(45deg, #e74c3c, #c0392b);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            text-align: center;
-            font-weight: 600;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-
-        .transcript-section {
-            background: var(--upload-bg);
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        .transcript-text {
-            background: var(--transcript-bg);
-            padding: 15px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            line-height: 1.5;
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-        }
-
-        .file-info {
-            background: var(--file-info-bg);
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin: 10px 0;
-            display: none;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .file-name {
-            font-weight: 600;
-            color: #27ae60;
-        }
-
-        .remove-file {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.8em;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .container {
-                padding: 10px;
-            }
-
-            .top-controls {
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="top-controls">
-            <button class="control-btn" id="themeToggle">
-                <span id="themeIcon">🌙</span>
-                <span id="themeText">Dark Mode</span>
-            </button>
-            <button class="control-btn" id="langToggle">
-                <span id="langIcon">🌐</span>
-                <span id="langText">العربية</span>
-            </button>
+      <div class="top-controls">
+        <button class="control-btn" id="themeToggle">
+          <span id="themeIcon">🌙</span>
+          <span id="themeText">Dark Mode</span>
+        </button>
+        <button class="control-btn" id="langToggle">
+          <span id="langIcon">🌐</span>
+          <span id="langText">العربية</span>
+        </button>
+      </div>
+
+      <div class="header">
+        <h1 id="mainTitle">🎧 Call Center Voice Analysis</h1>
+        <p id="mainSubtitle">
+          AI-powered sentiment analysis and issue detection for customer support
+          calls
+        </p>
+      </div>
+
+      <div class="main-content">
+        <div class="upload-section">
+          <h2 class="section-title">
+            <span>📁</span>
+            <span id="uploadTitle">Upload Voice Recording</span>
+          </h2>
+
+          <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">🎙️</div>
+            <div class="upload-text" id="uploadText">
+              Drop your voice recording here
+            </div>
+            <div class="upload-subtext" id="uploadSubtext">
+              or click to browse files
+            </div>
+            <div class="upload-subtext" id="uploadFormats">
+              Supports: MP3, WAV, M4A (Max 50MB)
+            </div>
+          </div>
+
+          <input
+            type="file"
+            id="audioFile"
+            class="file-input"
+            accept="audio/*"
+          />
+
+          <div class="file-info" id="fileInfo">
+            <span class="file-name" id="fileName"></span>
+            <button class="remove-file" id="removeFile">Remove</button>
+          </div>
+
+          <button class="analyze-btn" id="analyzeBtn" disabled>
+            <span>🚀</span>
+            <span id="analyzeText">Analyze Recording</span>
+          </button>
+
+          <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p id="loadingText">Processing voice recording...</p>
+            <p
+              id="loadingSubtext"
+              style="font-size: 0.9em; color: var(--text-muted)"
+            >
+              Converting speech to text and analyzing sentiment
+            </p>
+          </div>
         </div>
 
-        <div class="header">
-            <h1 id="mainTitle">🎧 Call Center Voice Analysis</h1>
-            <p id="mainSubtitle">AI-powered sentiment analysis and issue detection for customer support calls</p>
-        </div>
+        <div class="results-section">
+          <h2 class="section-title">
+            <span>📊</span>
+            <span id="resultsTitle">Analysis Results</span>
+          </h2>
 
-        <div class="main-content">
-            <div class="upload-section">
-                <h2 class="section-title">
-                    <span>📁</span>
-                    <span id="uploadTitle">Upload Voice Recording</span>
-                </h2>
-                
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">🎙️</div>
-                    <div class="upload-text" id="uploadText">Drop your voice recording here</div>
-                    <div class="upload-subtext" id="uploadSubtext">or click to browse files</div>
-                    <div class="upload-subtext" id="uploadFormats">Supports: MP3, WAV, M4A (Max 50MB)</div>
-                </div>
-                
-                <input type="file" id="audioFile" class="file-input" accept="audio/*">
-                
-                <div class="file-info" id="fileInfo">
-                    <span class="file-name" id="fileName"></span>
-                    <button class="remove-file" id="removeFile">Remove</button>
-                </div>
-                
-                <button class="analyze-btn" id="analyzeBtn" disabled>
-                    <span>🚀</span>
-                    <span id="analyzeText">Analyze Recording</span>
-                </button>
-                
-                <div class="loading" id="loading">
-                    <div class="spinner"></div>
-                    <p id="loadingText">Processing voice recording...</p>
-                    <p id="loadingSubtext" style="font-size: 0.9em; color: var(--text-muted);">Converting speech to text and analyzing sentiment</p>
-                </div>
+          <div
+            id="noResults"
+            style="text-align: center; color: var(--text-muted); padding: 40px"
+          >
+            <div style="font-size: 3em; margin-bottom: 15px">📋</div>
+            <p id="noResultsText">
+              Upload and analyze a voice recording to see results here
+            </p>
+          </div>
+
+          <div class="results" id="results">
+            <div class="sentiment-card" id="sentimentCard">
+              <div class="sentiment-score" id="sentimentScore">Positive</div>
+              <div id="sentimentLabel">Overall Customer Sentiment</div>
             </div>
 
-            <div class="results-section">
-                <h2 class="section-title">
-                    <span>📊</span>
-                    <span id="resultsTitle">Analysis Results</span>
-                </h2>
-                
-                <div id="noResults" style="text-align: center; color: var(--text-muted); padding: 40px;">
-                    <div style="font-size: 3em; margin-bottom: 15px;">📋</div>
-                    <p id="noResultsText">Upload and analyze a voice recording to see results here</p>
-                </div>
-                
-                <div class="results" id="results">
-                    <div class="sentiment-card" id="sentimentCard">
-                        <div class="sentiment-score" id="sentimentScore">Positive</div>
-                        <div id="sentimentLabel">Overall Customer Sentiment</div>
-                    </div>
-                    
-                    <div>
-                        <h3 id="issuesTitle" style="margin-bottom: 15px; color: var(--text-primary);">🔍 Key Issues Detected</h3>
-                        <div class="issues-list" id="issuesList">
-                            <!-- Issues will be populated here -->
-                        </div>
-                    </div>
-                    
-                    <div class="escalation-alert" id="escalationAlert" style="display: none;">
-                        <span>⚠️</span>
-                        <span id="escalationText">This call requires immediate escalation and follow-up!</span>
-                    </div>
-                    
-                    <div class="transcript-section">
-                        <h3 id="transcriptTitle" style="margin-bottom: 15px; color: var(--text-primary);">📝 Call Transcript</h3>
-                        <div class="transcript-text" id="transcriptText">
-                            Transcript will appear here after processing...
-                        </div>
-                    </div>
-                </div>
+            <div>
+              <h3
+                id="issuesTitle"
+                style="margin-bottom: 15px; color: var(--text-primary)"
+              >
+                🔍 Key Issues Detected
+              </h3>
+              <div class="issues-list" id="issuesList">
+                <!-- Issues will be populated here -->
+              </div>
             </div>
+
+            <div
+              class="escalation-alert"
+              id="escalationAlert"
+              style="display: none"
+            >
+              <span>⚠️</span>
+              <span id="escalationText"
+                >This call requires immediate escalation and follow-up!</span
+              >
+            </div>
+
+            <div class="transcript-section">
+              <h3
+                id="transcriptTitle"
+                style="margin-bottom: 15px; color: var(--text-primary)"
+              >
+                📝 Call Transcript
+              </h3>
+              <div class="transcript-text" id="transcriptText">
+                Transcript will appear here after processing...
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <script>
-        // Language translations
-        const translations = {
-            en: {
-                mainTitle: "🎧 Call Center Voice Analysis",
-                mainSubtitle: "AI-powered sentiment analysis and issue detection for customer support calls",
-                uploadTitle: "Upload Voice Recording",
-                uploadText: "Drop your voice recording here",
-                uploadSubtext: "or click to browse files",
-                uploadFormats: "Supports: MP3, WAV, M4A (Max 50MB)",
-                analyzeText: "Analyze Recording",
-                resultsTitle: "Analysis Results",
-                noResultsText: "Upload and analyze a voice recording to see results here",
-                sentimentLabel: "Overall Customer Sentiment",
-                issuesTitle: "🔍 Key Issues Detected",
-                escalationText: "This call requires immediate escalation and follow-up!",
-                transcriptTitle: "📝 Call Transcript",
-                loadingText: "Processing voice recording...",
-                loadingSubtext: "Converting speech to text and analyzing sentiment",
-                callsLabel: "Calls Processed Today",
-                issuesLabel: "Issues Detected",
-                escalationsLabel: "Escalations Needed",
-                avgLabel: "Avg Sentiment Score",
-                removeText: "Remove",
-                themeText: "Dark Mode",
-                langText: "العربية"
-            },
-            ar: {
-                mainTitle: "🎧 تحليل المكالمات الصوتية لمركز الاتصال",
-                mainSubtitle: "تحليل المشاعر واكتشاف المشاكل بالذكاء الاصطناعي لمكالمات دعم العملاء",
-                uploadTitle: "رفع التسجيل الصوتي",
-                uploadText: "اسحب التسجيل الصوتي هنا",
-                uploadSubtext: "أو اضغط لتصفح الملفات",
-                uploadFormats: "يدعم: MP3, WAV, M4A (حد أقصى 50 ميجابايت)",
-                analyzeText: "تحليل التسجيل",
-                resultsTitle: "نتائج التحليل",
-                noResultsText: "قم برفع وتحليل تسجيل صوتي لرؤية النتائج هنا",
-                sentimentLabel: "المشاعر العامة للعميل",
-                issuesTitle: "🔍 المشاكل الرئيسية المكتشفة",
-                escalationText: "هذه المكالمة تتطلب تصعيد ومتابعة فورية!",
-                transcriptTitle: "📝 نص المكالمة",
-                loadingText: "معالجة التسجيل الصوتي...",
-                loadingSubtext: "تحويل الكلام إلى نص وتحليل المشاعر",
-                callsLabel: "المكالمات المعالجة اليوم",
-                issuesLabel: "المشاكل المكتشفة",
-                escalationsLabel: "التصعيدات المطلوبة",
-                avgLabel: "متوسط نقاط المشاعر",
-                removeText: "إزالة",
-                themeText: "الوضع المظلم",
-                langText: "English"
-            }
-        };
+      // Language translations
+      const translations = {
+        en: {
+          mainTitle: "🎧 Call Center Voice Analysis",
+          mainSubtitle:
+            "AI-powered sentiment analysis and issue detection for customer support calls",
+          uploadTitle: "Upload Voice Recording",
+          uploadText: "Drop your voice recording here",
+          uploadSubtext: "or click to browse files",
+          uploadFormats: "Supports: MP3, WAV, M4A (Max 50MB)",
+          analyzeText: "Analyze Recording",
+          resultsTitle: "Analysis Results",
+          noResultsText:
+            "Upload and analyze a voice recording to see results here",
+          sentimentLabel: "Overall Customer Sentiment",
+          issuesTitle: "🔍 Key Issues Detected",
+          escalationText:
+            "This call requires immediate escalation and follow-up!",
+          transcriptTitle: "📝 Call Transcript",
+          loadingText: "Processing voice recording...",
+          loadingSubtext: "Converting speech to text and analyzing sentiment",
+          callsLabel: "Calls Processed Today",
+          issuesLabel: "Issues Detected",
+          escalationsLabel: "Escalations Needed",
+          avgLabel: "Avg Sentiment Score",
+          removeText: "Remove",
+          themeText: "Dark Mode",
+          langText: "العربية",
+        },
+        ar: {
+          mainTitle: "🎧 تحليل المكالمات الصوتية لمركز الاتصال",
+          mainSubtitle:
+            "تحليل المشاعر واكتشاف المشاكل بالذكاء الاصطناعي لمكالمات دعم العملاء",
+          uploadTitle: "رفع التسجيل الصوتي",
+          uploadText: "اسحب التسجيل الصوتي هنا",
+          uploadSubtext: "أو اضغط لتصفح الملفات",
+          uploadFormats: "يدعم: MP3, WAV, M4A (حد أقصى 50 ميجابايت)",
+          analyzeText: "تحليل التسجيل",
+          resultsTitle: "نتائج التحليل",
+          noResultsText: "قم برفع وتحليل تسجيل صوتي لرؤية النتائج هنا",
+          sentimentLabel: "المشاعر العامة للعميل",
+          issuesTitle: "🔍 المشاكل الرئيسية المكتشفة",
+          escalationText: "هذه المكالمة تتطلب تصعيد ومتابعة فورية!",
+          transcriptTitle: "📝 نص المكالمة",
+          loadingText: "معالجة التسجيل الصوتي...",
+          loadingSubtext: "تحويل الكلام إلى نص وتحليل المشاعر",
+          callsLabel: "المكالمات المعالجة اليوم",
+          issuesLabel: "المشاكل المكتشفة",
+          escalationsLabel: "التصعيدات المطلوبة",
+          avgLabel: "متوسط نقاط المشاعر",
+          removeText: "إزالة",
+          themeText: "الوضع المظلم",
+          langText: "English",
+        },
+      };
 
-        // Global variables
-        let selectedFile = null;
-        let currentLang = 'en';
-        let currentTheme = 'light';
+      // Global variables
+      let selectedFile = null;
+      let currentLang = "en";
+      let currentTheme = "light";
 
-        // DOM elements
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('audioFile');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileName = document.getElementById('fileName');
-        const removeFileBtn = document.getElementById('removeFile');
-        const analyzeBtn = document.getElementById('analyzeBtn');
-        const loading = document.getElementById('loading');
-        const noResults = document.getElementById('noResults');
-        const results = document.getElementById('results');
-        const themeToggle = document.getElementById('themeToggle');
-        const langToggle = document.getElementById('langToggle');
+      // DOM elements
+      const uploadArea = document.getElementById("uploadArea");
+      const fileInput = document.getElementById("audioFile");
+      const fileInfo = document.getElementById("fileInfo");
+      const fileName = document.getElementById("fileName");
+      const removeFileBtn = document.getElementById("removeFile");
+      const analyzeBtn = document.getElementById("analyzeBtn");
+      const loading = document.getElementById("loading");
+      const noResults = document.getElementById("noResults");
+      const results = document.getElementById("results");
+      const themeToggle = document.getElementById("themeToggle");
+      const langToggle = document.getElementById("langToggle");
 
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            // Load saved preferences
-            currentTheme = localStorage.getItem('theme') || 'light';
-            currentLang = localStorage.getItem('language') || 'en';
-            
-            applyTheme(currentTheme);
-            applyLanguage(currentLang);
-            
-            // Event listeners
-            uploadArea.addEventListener('click', () => fileInput.click());
-            uploadArea.addEventListener('dragover', handleDragOver);
-            uploadArea.addEventListener('drop', handleDrop);
-            uploadArea.addEventListener('dragleave', handleDragLeave);
-            fileInput.addEventListener('change', handleFileSelect);
-            removeFileBtn.addEventListener('click', removeFile);
-            analyzeBtn.addEventListener('click', analyzeRecording);
-            themeToggle.addEventListener('click', toggleTheme);
-            langToggle.addEventListener('click', toggleLanguage);
+      // Initialize app
+      document.addEventListener("DOMContentLoaded", function () {
+        // Load saved preferences
+        currentTheme = localStorage.getItem("theme") || "light";
+        currentLang = localStorage.getItem("language") || "en";
+
+        applyTheme(currentTheme);
+        applyLanguage(currentLang);
+
+        // Event listeners
+        uploadArea.addEventListener("click", () => fileInput.click());
+        uploadArea.addEventListener("dragover", handleDragOver);
+        uploadArea.addEventListener("drop", handleDrop);
+        uploadArea.addEventListener("dragleave", handleDragLeave);
+        fileInput.addEventListener("change", handleFileSelect);
+        removeFileBtn.addEventListener("click", removeFile);
+        analyzeBtn.addEventListener("click", analyzeRecording);
+        themeToggle.addEventListener("click", toggleTheme);
+        langToggle.addEventListener("click", toggleLanguage);
+      });
+
+      // Theme functions
+      function toggleTheme() {
+        currentTheme = currentTheme === "light" ? "dark" : "light";
+        applyTheme(currentTheme);
+        localStorage.setItem("theme", currentTheme);
+      }
+
+      function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        const themeIcon = document.getElementById("themeIcon");
+        const themeText = document.getElementById("themeText");
+
+        if (theme === "dark") {
+          themeIcon.textContent = "☀️";
+          themeText.textContent =
+            currentLang === "ar" ? "الوضع المضيء" : "Light Mode";
+        } else {
+          themeIcon.textContent = "🌙";
+          themeText.textContent =
+            currentLang === "ar" ? "الوضع المظلم" : "Dark Mode";
+        }
+      }
+
+      // Language functions
+      function toggleLanguage() {
+        currentLang = currentLang === "en" ? "ar" : "en";
+        applyLanguage(currentLang);
+        localStorage.setItem("language", currentLang);
+      }
+
+      function applyLanguage(lang) {
+        const html = document.documentElement;
+        html.setAttribute("lang", lang);
+        html.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
+
+        // Update all text elements
+        Object.keys(translations[lang]).forEach((key) => {
+          const element = document.getElementById(key);
+          if (element) {
+            element.textContent = translations[lang][key];
+          }
         });
 
-        // Theme functions
-        function toggleTheme() {
-            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-            applyTheme(currentTheme);
-            localStorage.setItem('theme', currentTheme);
+        // Update language toggle button
+        const langText = document.getElementById("langText");
+        langText.textContent = lang === "ar" ? "English" : "العربية";
+
+        // Update theme button text
+        applyTheme(currentTheme);
+      }
+
+      // File upload handling
+      function handleDragOver(e) {
+        e.preventDefault();
+        uploadArea.classList.add("dragover");
+      }
+
+      function handleDragLeave(e) {
+        e.preventDefault();
+        uploadArea.classList.remove("dragover");
+      }
+
+      function handleDrop(e) {
+        e.preventDefault();
+        uploadArea.classList.remove("dragover");
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          handleFile(files[0]);
+        }
+      }
+
+      function handleFileSelect(e) {
+        const file = e.target.files[0];
+        if (file) {
+          handleFile(file);
+        }
+      }
+
+      function handleFile(file) {
+        // Validate file type
+        const validTypes = [
+          "audio/mp3",
+          "audio/wav",
+          "audio/mpeg",
+          "audio/mp4",
+          "audio/m4a",
+        ];
+        if (
+          !validTypes.includes(file.type) &&
+          !file.name.match(/\.(mp3|wav|m4a)$/i)
+        ) {
+          const message =
+            currentLang === "ar"
+              ? "يرجى اختيار ملف صوتي صالح (MP3, WAV, M4A)"
+              : "Please select a valid audio file (MP3, WAV, M4A)";
+          alert(message);
+          return;
         }
 
-        function applyTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            const themeIcon = document.getElementById('themeIcon');
-            const themeText = document.getElementById('themeText');
-            
-            if (theme === 'dark') {
-                themeIcon.textContent = '☀️';
-                themeText.textContent = currentLang === 'ar' ? 'الوضع المضيء' : 'Light Mode';
-            } else {
-                themeIcon.textContent = '🌙';
-                themeText.textContent = currentLang === 'ar' ? 'الوضع المظلم' : 'Dark Mode';
-            }
+        // Validate file size (50MB limit)
+        if (file.size > 50 * 1024 * 1024) {
+          const message =
+            currentLang === "ar"
+              ? "يجب أن يكون حجم الملف أقل من 50 ميجابايت"
+              : "File size must be less than 50MB";
+          alert(message);
+          return;
         }
 
-        // Language functions
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'ar' : 'en';
-            applyLanguage(currentLang);
-            localStorage.setItem('language', currentLang);
-        }
+        selectedFile = file;
+        fileName.textContent = file.name;
+        fileInfo.style.display = "flex";
+        analyzeBtn.disabled = false;
+      }
 
-        function applyLanguage(lang) {
-            const html = document.documentElement;
-            html.setAttribute('lang', lang);
-            html.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-            
-            // Update all text elements
-            Object.keys(translations[lang]).forEach(key => {
-                const element = document.getElementById(key);
-                if (element) {
-                    element.textContent = translations[lang][key];
-                }
-            });
-
-            // Update language toggle button
-            const langText = document.getElementById('langText');
-            langText.textContent = lang === 'ar' ? 'English' : 'العربية';
-            
-            // Update theme button text
-            applyTheme(currentTheme);
-        }
-
-        // File upload handling
-        function handleDragOver(e) {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        }
-
-        function handleDragLeave(e) {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
-            }
-        }
-
-        function handleFileSelect(e) {
-            const file = e.target.files[0];
-            if (file) {
-                handleFile(file);
-            }
-        }
-
-        function handleFile(file) {
-            // Validate file type
-            const validTypes = ['audio/mp3', 'audio/wav', 'audio/mpeg', 'audio/mp4', 'audio/m4a'];
-            if (!validTypes.includes(file.type) && !file.name.match(/\.(mp3|wav|m4a)$/i)) {
-                const message = currentLang === 'ar' 
-                    ? 'يرجى اختيار ملف صوتي صالح (MP3, WAV, M4A)'
-                    : 'Please select a valid audio file (MP3, WAV, M4A)';
-                alert(message);
-                return;
-            }
-
-            // Validate file size (50MB limit)
-            if (file.size > 50 * 1024 * 1024) {
-                const message = currentLang === 'ar' 
-                    ? 'يجب أن يكون حجم الملف أقل من 50 ميجابايت'
-                    : 'File size must be less than 50MB';
-                alert(message);
-                return;
-            }
-
-            selectedFile = file;
-            fileName.textContent = file.name;
-            fileInfo.style.display = 'flex';
-            analyzeBtn.disabled = false;
-        }
-
-        function removeFile() {
-            selectedFile = null;
-            fileInput.value = '';
-            fileInfo.style.display = 'none';
-            analyzeBtn.disabled = true;
-        }
+      function removeFile() {
+        selectedFile = null;
+        fileInput.value = "";
+        fileInfo.style.display = "none";
+        analyzeBtn.disabled = true;
+      }
     </script>
-</body>
+  </body>
 </html>
