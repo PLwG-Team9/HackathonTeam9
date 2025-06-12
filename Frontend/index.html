@@ -345,34 +345,6 @@
             color: var(--text-primary);
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .stat-card {
-            background: var(--bg-secondary);
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 5px 15px var(--card-shadow);
-            transition: all 0.3s ease;
-        }
-
-        .stat-number {
-            font-size: 2em;
-            font-weight: bold;
-            color: #3498db;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            color: var(--text-secondary);
-            font-size: 0.9em;
-        }
-
         .file-info {
             background: var(--file-info-bg);
             padding: 10px 15px;
@@ -505,25 +477,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number" id="callsProcessed">0</div>
-                <div class="stat-label" id="callsLabel">Calls Processed Today</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="issuesDetected">0</div>
-                <div class="stat-label" id="issuesLabel">Issues Detected</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="escalationsNeeded">0</div>
-                <div class="stat-label" id="escalationsLabel">Escalations Needed</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="avgSentiment">0.0</div>
-                <div class="stat-label" id="avgLabel">Avg Sentiment Score</div>
             </div>
         </div>
     </div>
