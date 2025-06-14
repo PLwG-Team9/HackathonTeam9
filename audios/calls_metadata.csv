@@ -1,0 +1,19 @@
+call_id,speaker,text,sentiment,start_time,end_time,audio_part,full_call_audio
+call_1,A,مرحبًا، عندي مشكلة في فاتورة الهاتف هذا الشهر.,negative,0.0,4.92,call_1_A1.mp3,call_1_full.mp3
+call_1,B,أهلًا بك، دعني أتحقق من الفاتورة الخاصة بك الآن.,neutral,5.22,10.57,call_1_B2.mp3,call_1_full.mp3
+call_1,A,وجدت رسوم إضافية لم أفهمها، هل يمكنك توضيحها؟,neutral,10.87,16.46,call_1_A3.mp3,call_1_full.mp3
+call_1,B,نعم، هذه الرسوم تتعلق باستخدام البيانات الزائدة.,neutral,16.76,22.21,call_1_B4.mp3,call_1_full.mp3
+call_1,A,حسنًا، شكرًا على التوضيح.,positive,22.51,25.82,call_1_A5.mp3,call_1_full.mp3
+call_1,B,على الرحب والسعة، هل هناك أي شيء آخر يمكنني مساعدتك فيه؟,neutral,26.12,32.22,call_1_B6.mp3,call_1_full.mp3
+call_1,A,لا، شكرًا مجددًا.,positive,32.52,35.42,call_1_A7.mp3,call_1_full.mp3
+call_2,A,مرحبًا، الإنترنت في منزلي لا يعمل منذ الصباح.,negative,0.0,5.16,call_2_A1.mp3,call_2_full.mp3
+call_2,B,آسف لسماع ذلك، هل قمت بإعادة تشغيل جهاز التوجيه؟,neutral,5.46,11.29,call_2_B2.mp3,call_2_full.mp3
+call_2,A,نعم، فعلت ذلك أكثر من مرة.,negative,11.59,15.31,call_2_A3.mp3,call_2_full.mp3
+call_2,B,سأرسل فنيًا ليفحص المشكلة خلال الساعتين القادمتين.,positive,15.61,20.84,call_2_B4.mp3,call_2_full.mp3
+call_2,A,شكرًا جزيلًا.,positive,21.14,23.33,call_2_A5.mp3,call_2_full.mp3
+call_3,A,أرغب في تغيير باقة الاشتراك الخاصة بي.,neutral,0.0,3.98,call_3_A1.mp3,call_3_full.mp3
+call_3,B,بالطبع، ما الباقة التي تود التحويل إليها؟,neutral,4.28,8.84,call_3_B2.mp3,call_3_full.mp3
+call_3,A,أرغب في باقة أسرع لتناسب احتياجات العمل من المنزل.,neutral,9.14,14.28,call_3_A3.mp3,call_3_full.mp3
+call_3,B,لدينا باقة 200 ميجابت بسعر مناسب. هل ترغب بها؟,positive,14.58,21.01,call_3_B4.mp3,call_3_full.mp3
+call_3,A,نعم، هذا ممتاز. قم بتحويلي إليها من فضلك.,positive,21.31,27.26,call_3_A5.mp3,call_3_full.mp3
+call_3,B,تم التحويل، وستبدأ الباقة الجديدة من اليوم.,positive,27.56,32.32,call_3_B6.mp3,call_3_full.mp3
