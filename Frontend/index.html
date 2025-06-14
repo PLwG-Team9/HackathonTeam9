@@ -533,39 +533,83 @@
     </div>
 
     <script>
+      // Mock data based on your provided data
+      const mockCallData = {
+        call_1: {
+          transcript: `SPEAKER_01: مرحباً، عندي مشكلة في فتورة الهاتف هذا الشهر.
+SPEAKER_00: أهلاً ديك، دعني أتحقق من الفاتورة الخاصة بك الآن.
+SPEAKER_01: وجدت رسوم إضافية لم أفهمها. هل يمكنك توضيحها؟
+SPEAKER_00: نعم، هذه الرسوم تتعلق باستخدام البيانات الزائدة
+SPEAKER_01: حسناً، شكراً على التوضيح.
+SPEAKER_00: على الرحب والسعى هل هناك أي شيء آخر يمكنني مساعدتك فيه؟
+SPEAKER_01: لا، شكرا مجددا`,
+          sentiment: 'Mixed',
+          overallSentiment: 'neutral',
+          issues: [
+            'فاتورة الهاتف - رسوم إضافية',
+            'استفسار عن رسوم البيانات الزائدة'
+          ],
+          keyphrases: ['يمكنك توضيحها ؟', 'وجدت رسوم إضافية', 'عندي مشكلة', 'فتورة الهاتف'],
+          needsEscalation: false
+        },
+        call_2: {
+          transcript: `SPEAKER_00: مرحباً، الإنترنت في منزلي لا يعمل منذ الصباح.
+SPEAKER_01: آسف للسماع ذلك، هل قمت بإعادة تشغيل جهاز التوجيه؟
+SPEAKER_00: نعم، فعلت ذلك أكثر من مرة
+SPEAKER_01: سأرسل فنيا ليفحص المشكلة خلال الساعتين القادمتين
+SPEAKER_00: شكرا جزيلا`,
+          sentiment: 'Negative to Positive',
+          overallSentiment: 'negative',
+          issues: [
+            'انقطاع خدمة الإنترنت',
+            'مشكلة تقنية تتطلب زيارة فني'
+          ],
+          keyphrases: ['الإنترنت', 'لا يعمل', 'منزلي', 'الصباح'],
+          needsEscalation: true
+        },
+        call_3: {
+          transcript: `SPEAKER_00: أرغب في تغيير باقة الاشتراك الخاصة بي
+SPEAKER_01: بالطبع ما الباقة التي تود التحويل إليها؟
+SPEAKER_00: أرغب في باقة أسرع لتناسب احتياجات العمل من المنزل
+SPEAKER_01: لدينا باقة ماءتان نجابت بسعر مناسب هل ترغب بها؟
+SPEAKER_00: نعم، هذا ممتاز. خم بتحويلي إليها من فضلك.
+SPEAKER_01: تم التحويل وستبدأ الباقة الجديدة من اليوم`,
+          sentiment: 'Positive',
+          overallSentiment: 'positive',
+          issues: [
+            'طلب تغيير باقة الاشتراك',
+            'احتياجات العمل من المنزل'
+          ],
+          keyphrases: ['باقة أسرع لتناسب احتياجات العمل', 'تغيير باقة الاشتراك الخاصة', 'أرغب'],
+          needsEscalation: false
+        }
+      };
+
       // Language translations
       const translations = {
         en: {
           mainTitle: "🎧 Call Center Voice Analysis",
-          mainSubtitle:
-            "AI-powered sentiment analysis and issue detection for customer support calls",
+          mainSubtitle: "AI-powered sentiment analysis and issue detection for customer support calls",
           uploadTitle: "Upload Voice Recording",
           uploadText: "Drop your voice recording here",
           uploadSubtext: "or click to browse files",
           uploadFormats: "Supports: MP3, WAV, M4A (Max 50MB)",
           analyzeText: "Analyze Recording",
           resultsTitle: "Analysis Results",
-          noResultsText:
-            "Upload and analyze a voice recording to see results here",
+          noResultsText: "Upload and analyze a voice recording to see results here",
           sentimentLabel: "Overall Customer Sentiment",
           issuesTitle: "🔍 Key Issues Detected",
-          escalationText:
-            "This call requires immediate escalation and follow-up!",
+          escalationText: "This call requires immediate escalation and follow-up!",
           transcriptTitle: "📝 Call Transcript",
           loadingText: "Processing voice recording...",
           loadingSubtext: "Converting speech to text and analyzing sentiment",
-          callsLabel: "Calls Processed Today",
-          issuesLabel: "Issues Detected",
-          escalationsLabel: "Escalations Needed",
-          avgLabel: "Avg Sentiment Score",
           removeText: "Remove",
           themeText: "Dark Mode",
           langText: "العربية",
         },
         ar: {
           mainTitle: "🎧 تحليل المكالمات الصوتية لمركز الاتصال",
-          mainSubtitle:
-            "تحليل المشاعر واكتشاف المشاكل بالذكاء الاصطناعي لمكالمات دعم العملاء",
+          mainSubtitle: "تحليل المشاعر واكتشاف المشاكل بالذكاء الاصطناعي لمكالمات دعم العملاء",
           uploadTitle: "رفع التسجيل الصوتي",
           uploadText: "اسحب التسجيل الصوتي هنا",
           uploadSubtext: "أو اضغط لتصفح الملفات",
@@ -579,10 +623,6 @@
           transcriptTitle: "📝 نص المكالمة",
           loadingText: "معالجة التسجيل الصوتي...",
           loadingSubtext: "تحويل الكلام إلى نص وتحليل المشاعر",
-          callsLabel: "المكالمات المعالجة اليوم",
-          issuesLabel: "المشاكل المكتشفة",
-          escalationsLabel: "التصعيدات المطلوبة",
-          avgLabel: "متوسط نقاط المشاعر",
           removeText: "إزالة",
           themeText: "الوضع المظلم",
           langText: "English",
@@ -609,10 +649,7 @@
 
       // Initialize app
       document.addEventListener("DOMContentLoaded", function () {
-        // Load saved preferences
-        currentTheme = localStorage.getItem("theme") || "light";
-        currentLang = localStorage.getItem("language") || "en";
-
+        // Load saved preferences (using variables instead of localStorage)
         applyTheme(currentTheme);
         applyLanguage(currentLang);
 
@@ -623,7 +660,7 @@
         uploadArea.addEventListener("dragleave", handleDragLeave);
         fileInput.addEventListener("change", handleFileSelect);
         removeFileBtn.addEventListener("click", removeFile);
-        // analyzeBtn.addEventListener("click", analyzeRecording);
+        analyzeBtn.addEventListener("click", analyzeRecording);
         themeToggle.addEventListener("click", toggleTheme);
         langToggle.addEventListener("click", toggleLanguage);
       });
@@ -632,7 +669,6 @@
       function toggleTheme() {
         currentTheme = currentTheme === "light" ? "dark" : "light";
         applyTheme(currentTheme);
-        localStorage.setItem("theme", currentTheme);
       }
 
       function applyTheme(theme) {
@@ -642,12 +678,14 @@
 
         if (theme === "dark") {
           themeIcon.textContent = "☀️";
-          themeText.textContent =
-            currentLang === "ar" ? "الوضع المضيء" : "Light Mode";
+          themeText.textContent = currentLang === "ar" ? "الوضع المضيء" : "Light Mode";
+          document.body.style.backgroundColor = "#1a1a1a";
+          document.body.style.color = "#ffffff";
         } else {
           themeIcon.textContent = "🌙";
-          themeText.textContent =
-            currentLang === "ar" ? "الوضع المظلم" : "Dark Mode";
+          themeText.textContent = currentLang === "ar" ? "الوضع المظلم" : "Dark Mode";
+          document.body.style.backgroundColor = "#ffffff";
+          document.body.style.color = "#000000";
         }
       }
 
@@ -655,7 +693,6 @@
       function toggleLanguage() {
         currentLang = currentLang === "en" ? "ar" : "en";
         applyLanguage(currentLang);
-        localStorage.setItem("language", currentLang);
       }
 
       function applyLanguage(lang) {
@@ -708,31 +745,20 @@
 
       function handleFile(file) {
         // Validate file type
-        const validTypes = [
-          "audio/mp3",
-          "audio/wav",
-          "audio/mpeg",
-          "audio/mp4",
-          "audio/m4a",
-        ];
-        if (
-          !validTypes.includes(file.type) &&
-          !file.name.match(/\.(mp3|wav|m4a)$/i)
-        ) {
-          const message =
-            currentLang === "ar"
-              ? "يرجى اختيار ملف صوتي صالح (MP3, WAV, M4A)"
-              : "Please select a valid audio file (MP3, WAV, M4A)";
+        const validTypes = ["audio/mp3", "audio/wav", "audio/mpeg", "audio/mp4", "audio/m4a"];
+        if (!validTypes.includes(file.type) && !file.name.match(/\.(mp3|wav|m4a)$/i)) {
+          const message = currentLang === "ar" 
+            ? "يرجى اختيار ملف صوتي صالح (MP3, WAV, M4A)"
+            : "Please select a valid audio file (MP3, WAV, M4A)";
           alert(message);
           return;
         }
 
         // Validate file size (50MB limit)
         if (file.size > 50 * 1024 * 1024) {
-          const message =
-            currentLang === "ar"
-              ? "يجب أن يكون حجم الملف أقل من 50 ميجابايت"
-              : "File size must be less than 50MB";
+          const message = currentLang === "ar"
+            ? "يجب أن يكون حجم الملف أقل من 50 ميجابايت"
+            : "File size must be less than 50MB";
           alert(message);
           return;
         }
@@ -748,6 +774,76 @@
         fileInput.value = "";
         fileInfo.style.display = "none";
         analyzeBtn.disabled = true;
+      }
+
+      // Mock analysis function
+      function analyzeRecording() {
+    if (!selectedFile) return;
+
+    // Show loading
+    loading.style.display = "block";
+    noResults.style.display = "none";
+    results.style.display = "none";
+    analyzeBtn.disabled = true;
+
+    // Simulate processing delay
+    setTimeout(() => {
+      const filename = selectedFile.name.toLowerCase();
+
+      let callKey = null;
+      if (filename.includes("call_1")) {
+        callKey = "call_1";
+      } else if (filename.includes("call_2")) {
+        callKey = "call_2";
+      } else if (filename.includes("call_3")) {
+        callKey = "call_3";
+      }
+
+      const mockData = mockCallData[callKey];
+
+      if (mockData) {
+        displayResults(mockData);
+        loading.style.display = "none";
+        results.style.display = "block";
+      } else {
+        loading.style.display = "none";
+        alert(currentLang === "ar" 
+          ? "لا توجد بيانات تحليل لهذه المكالمة" 
+          : "No analysis data found for this file.");
+      }
+
+      analyzeBtn.disabled = false;
+    }, 2000); // 2 second delay
+  }
+      function displayResults(data) {
+        // Update sentiment
+        const sentimentScore = document.getElementById("sentimentScore");
+        const sentimentCard = document.getElementById("sentimentCard");
+        
+        sentimentScore.textContent = data.sentiment;
+        
+        // Color code sentiment
+        sentimentCard.style.backgroundColor = 
+          data.overallSentiment === 'positive' ? '#d4edda' :
+          data.overallSentiment === 'negative' ? '#f8d7da' : '#fff3cd';
+
+        // Update issues
+        const issuesList = document.getElementById("issuesList");
+        issuesList.innerHTML = '';
+        data.issues.forEach(issue => {
+          const issueDiv = document.createElement('div');
+          issueDiv.className = 'issue-item';
+          issueDiv.textContent = `• ${issue}`;
+          issuesList.appendChild(issueDiv);
+        });
+
+        // Show/hide escalation alert
+        const escalationAlert = document.getElementById("escalationAlert");
+        escalationAlert.style.display = data.needsEscalation ? "block" : "none";
+
+        // Update transcript
+        const transcriptText = document.getElementById("transcriptText");
+        transcriptText.textContent = data.transcript;
       }
     </script>
   </body>
